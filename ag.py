@@ -30,131 +30,6 @@ def lsDirectory(directory):
     return files
 
 
-# analizar si esto esta bien
-def leer_instancia(ruta):
-    with open(ruta, "r", encoding="utf-8") as archivo:
-        tokens = []
-        for linea in archivo:
-            linea = linea.split("#", 1)[0]
-            tokens.extend(linea.split())
-
-    if len(tokens) < 2:
-        raise ValueError("El archivo no contiene la cantidad de trabajos y maquinas.")
-
-    try:
-        cantidad_trabajos = int(tokens[0])
-        cantidad_maquinas = int(tokens[1])
-        tiempos = [int(token) for token in tokens[2:]]
-    except ValueError as error:
-        raise ValueError("El archivo contiene valores que no son enteros.") from error
-
-    cantidad_tiempos = cantidad_trabajos * cantidad_maquinas
-    if len(tiempos) != cantidad_tiempos:
-        raise ValueError(
-            f"Se esperaban {cantidad_tiempos} tiempos y se encontraron {len(tiempos)}."
-        )
-
-    matriz_tiempos = np.array(
-        tiempos,
-        dtype=np.int64,
-    ).reshape(cantidad_trabajos, cantidad_maquinas)
-    return cantidad_trabajos, cantidad_maquinas, matriz_tiempos
-
-
-
-
-
-
-
-
-
-
-
-
-
-''' 
-Implementacion del algoritmo genetico para el problema PFSP
-'''
-
-def crear_poblacion(cantidad_trabajos, tam_pob, generador):
-    poblacion = []
-    plantilla = np.arange(cantidad_trabajos, dtype=np.int64)
-    for _ in range(tam_pob):
-        individuo = plantilla.copy()
-        individuo = np.array(generador.sample(individuo.tolist(), cantidad_trabajos))
-        poblacion.append(individuo)
-    return poblacion
-
-
-def seleccion_torneo(poblacion, tiempos, generador, tam_torneo=3):
-    participantes = generador.sample(
-        poblacion,
-        min(tam_torneo, len(poblacion)),
-    )
-    return min(participantes, key=lambda individuo: fitness_pfsp(individuo, tiempos))
-
-
-def cruce_ordenado(primer_padre, segundo_padre, generador):
-    """Cruce OX: genera un hijo que conserva una permutacion valida."""
-    inicio, fin = sorted(generador.sample(range(len(primer_padre)), 2))
-    hijo = np.full(len(primer_padre), -1, dtype=np.int64)
-    hijo[inicio:fin] = primer_padre[inicio:fin]
-    genes_restantes = [
-        trabajo for trabajo in segundo_padre if trabajo not in hijo[inicio:fin]
-    ]
-
-    posicion = 0
-    for indice in range(len(hijo)):
-        if hijo[indice] == -1:
-            hijo[indice] = genes_restantes[posicion]
-            posicion += 1
-    return hijo
-
-
-def mutar_intercambio(individuo, por_mul, generador):
-    if generador.random() < por_mul:
-        primera, segunda = generador.sample(range(len(individuo)), 2)
-        individuo[primera], individuo[segunda] = (
-            individuo[segunda],
-            individuo[primera],
-        )
-
-
-def ejecutar_algoritmo_genetico(
-    tiempos,
-    tam_pob,
-    por_cru,
-    por_mul,
-    num_ite,
-    semilla,
-):
-    generador = random.Random(semilla)
-    poblacion = crear_poblacion(len(tiempos), tam_pob, generador)
-    mejor = min(poblacion, key=lambda individuo: fitness_pfsp(individuo, tiempos))
-
-    for _ in range(num_ite):
-        nueva_poblacion = [mejor.copy()]
-        while len(nueva_poblacion) < tam_pob:
-            primer_padre = seleccion_torneo(poblacion, tiempos, generador)
-            segundo_padre = seleccion_torneo(poblacion, tiempos, generador)
-
-            if generador.random() < por_cru:
-                hijo = cruce_ordenado(primer_padre, segundo_padre, generador)
-            else:
-                hijo = primer_padre.copy()
-
-            mutar_intercambio(hijo, por_mul, generador)
-            nueva_poblacion.append(hijo)
-
-        poblacion = nueva_poblacion
-        candidato = min(
-            poblacion,
-            key=lambda individuo: fitness_pfsp(individuo, tiempos),
-        )
-        if fitness_pfsp(candidato, tiempos) < fitness_pfsp(mejor, tiempos):
-            mejor = candidato.copy()
-
-    return mejor, fitness_pfsp(mejor, tiempos)
 
 
 def createParser():
@@ -197,22 +72,13 @@ def createParser():
 
 
 def main():
-    files = lsDirectory("data")
-    print("Archivos de entrada disponibles en data/: ", files)
+    #files = lsDirectory("data")
+    #print("Archivos de entrada disponibles en data/: ", files)
     
-    if not files:
-        createParser().error("No se encontraron archivos de entrada en el directorio data/.")
+    #if not files:
+    #    createParser().error("No se encontraron archivos de entrada en el directorio data/.")
     
     args = createParser().parse_args()
-
-    # restricciones:
-    if args.tam_pob < 2:
-        createParser().error("tam_pob debe ser mayor o igual que 2.")
-    if not 0 <= args.por_cru <= 1 or not 0 <= args.por_mul <= 1:
-        createParser().error("por_cru y por_mul deben estar entre 0 y 1.")
-    if args.num_ite < 0:
-        createParser().error("num_ite no puede ser negativo.")
-
     semilla = args.semilla
     tam_pob = args.tam_pob
     por_cru = args.por_cru
@@ -227,19 +93,25 @@ def main():
         )
 
     os.makedirs(os.path.dirname(salida), exist_ok=True)
-
-
+ 
     with open(entrada, "r", encoding="utf-8") as f:
+        f.readline()
+        metadatos = f.readline().split("#", 1)[1].split()
+        f.readline()
         data_info = f.readline().strip().split()
-        cantidad_trabajos = int(data_info[0])
+        num_job = int(data_info[0])
+        num_maquinas = int(data_info[1])
+        seed = int(metadatos[2])
+        lim_inf = int(metadatos[3])
+        lim_sup = int(metadatos[4])
+
+        matriz = np.loadtxt(f, dtype=int)
+    print(f"P1: {num_job},P2: {num_maquinas} P3: {seed}, lim_inf: {lim_inf}, lim_sup: {lim_sup}")
+    print(matriz)
 
 
     '''
-    try:
-        cantidad_trabajos, cantidad_maquinas, tiempos = leer_instancia(entrada)
-    except ValueError as error:
-        createParser().error(str(error))
-
+    # llama a la funcion de archivo ar_build
     mejor, makespan = ejecutar_algoritmo_genetico(
         tiempos,
         args.tam_pob,
