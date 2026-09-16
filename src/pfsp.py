@@ -16,25 +16,3 @@ def fitness_pfsp(permutacion, tiempos):
 
     return int(finalizacion_maquinas[-1])
 
-# probar
-def leer_instancia(ruta):
-    with open(ruta, encoding="utf-8") as archivo:
-        lineas = [linea.split("#", 1)[0].strip() for linea in archivo]
-    lineas = [linea for linea in lineas if linea]
-
-    '''
-    if not lineas:
-        raise ValueError("La instancia esta vacia.")
-    n, m = map(int, lineas[0].split())
-    if n < 1 or m < 1:
-        raise ValueError("Se requiere al menos un trabajo y una maquina.")
-    filas = [list(map(int, linea.split())) for linea in lineas[1:]]
-    if len(filas) != m or any(len(fila) != n for fila in filas):
-        raise ValueError(f"Se esperaban {m} filas de {n} tiempos.")
-    tiempos = np.array(filas, dtype=np.int64).T.copy()
-    if np.any(tiempos < 0):
-        raise ValueError("Los tiempos no pueden ser negativos.")
-    '''
-    filas = [list(map(int, linea.split())) for linea in lineas[1:]]
-    tiempos = np.array(filas, dtype=np.int64).T.copy()
-    return tiempos

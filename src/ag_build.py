@@ -62,12 +62,14 @@ def ejecutar_algoritmo_genetico(
     por_mul,
     num_ite,
     semilla,
+    frecuencia_local=0,
+    max_evaluaciones_local=100,
 ):
     generador = random.Random(semilla)
     poblacion = crear_poblacion(len(tiempos), tam_pob, generador)
     mejor = min(poblacion, key=lambda individuo: fitness_pfsp(individuo, tiempos))
 
-    for _ in range(num_ite):
+    for generacion in range(num_ite):
         nueva_poblacion = [mejor.copy()]
         while len(nueva_poblacion) < tam_pob:
             primer_padre = seleccion_torneo(poblacion, tiempos, generador)
@@ -86,7 +88,60 @@ def ejecutar_algoritmo_genetico(
             poblacion,
             key=lambda individuo: fitness_pfsp(individuo, tiempos),
         )
+        if frecuencia_local and (generacion + 1) % frecuencia_local == 0:
+            mejorado = busqueda_local_insercion(
+                candidato, tiempos, generador, max_evaluaciones_local
+            )
+            indice = next(i for i, individuo in enumerate(poblacion) if individuo is candidato)
+            poblacion[indice] = mejorado
+            candidato = mejorado
         if fitness_pfsp(candidato, tiempos) < fitness_pfsp(mejor, tiempos):
             mejor = candidato.copy()
-
+            
     return mejor, fitness_pfsp(mejor, tiempos)
+
+
+
+
+def busqueda_local_insercion(individuo, tiempos, generador, max_evaluaciones=100):
+    """Primera mejora por insercion, limitada por evaluaciones de vecinos."""
+    mejor = individuo.copy()
+    costo = fitness_pfsp(mejor, tiempos)
+    evaluaciones = 0
+    while evaluaciones < max_evaluaciones:
+        mejora = False
+        origenes = list(range(len(mejor)))
+        generador.shuffle(origenes)
+        for origen in origenes:
+            destinos = list(range(len(mejor)))
+            generador.shuffle(destinos)
+            for destino in destinos:
+                if origen == destino:
+                    continue
+                vecino = mejor.tolist()
+                vecino.insert(destino, vecino.pop(origen))
+                vecino = np.array(vecino, dtype=np.int64)
+                valor = fitness_pfsp(vecino, tiempos)
+                evaluaciones += 1
+                if valor < costo:
+                    mejor, costo, mejora = vecino, valor, True
+                    break
+                if evaluaciones >= max_evaluaciones:
+                    return mejor
+            if mejora:
+                break
+        if not mejora:
+            break
+    return mejor
+
+
+def ejecutar_algoritmo_memetico(
+    tiempos, tam_pob, por_cru, por_mul, num_ite, semilla,
+    frecuencia_local=1, max_evaluaciones_local=100,
+):
+    if frecuencia_local < 1:
+        raise ValueError("La frecuencia local debe ser al menos 1.")
+    return ejecutar_algoritmo_genetico(
+        tiempos, tam_pob, por_cru, por_mul, num_ite, semilla,
+        frecuencia_local, max_evaluaciones_local,
+    )

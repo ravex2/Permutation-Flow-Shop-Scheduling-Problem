@@ -1,6 +1,6 @@
-from matplotlib as plt
+import matplotlib as plt
 
 
 # pasar los resukltados con dataset -> result carpeta
-def benchmark_result():
+def benchmark_result_pfsp():
     pass

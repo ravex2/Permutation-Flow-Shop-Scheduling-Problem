@@ -3,8 +3,8 @@ import os
 import argparse
 import random
 import numpy as np
-from src.pfsp import fitness_pfsp,fitnesss_pfsp_machines_per
-
+from src.pfsp import fitness_pfsp,leer_instancia
+from src.ag_build import ejecutar_algoritmo_genetico
 
 def resolve_path_windows(path, directory):
     ruta = os.path.expanduser(path)
@@ -123,22 +123,17 @@ def main():
     print(f"P1: {num_job},P2: {num_maquinas} P3: {seed}, lim_inf: {lim_inf}, lim_sup: {lim_sup}")
     print(matriz)
 
-    fitnesss_pfsp_machines_per(num_job,num_maquinas,matriz,seed)
-    #candidato = min(poblacion,key=lambda individuo: fitness_pfsp(individuo, tiempos))
-
-
-    '''
+    
     # llama a la funcion de archivo ar_build
     mejor, makespan = ejecutar_algoritmo_genetico(
-        tiempos,
+        matriz,
         args.tam_pob,
         args.por_cru,
         args.por_mul,
         args.num_ite,
         args.semilla,
     )
-    saveData(salida, cantidad_trabajos, cantidad_maquinas, makespan, mejor)
-    '''
+    saveData(salida, num_job, num_maquinas, makespan, mejor)
 
 
 
