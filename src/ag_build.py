@@ -11,6 +11,7 @@ Implementacion del algoritmo genetico para el problema PFSP
 def crear_poblacion(cantidad_trabajos, tam_pob, generador):
     poblacion = []
     plantilla = np.arange(cantidad_trabajos, dtype=np.int64)
+    print(plantilla)
     for _ in range(tam_pob):
         individuo = plantilla.copy()
         individuo = np.array(generador.sample(individuo.tolist(), cantidad_trabajos))
@@ -27,7 +28,6 @@ def seleccion_torneo(poblacion, tiempos, generador, tam_torneo=3):
 
 
 def cruce_ordenado(primer_padre, segundo_padre, generador):
-    """Cruce OX: genera un hijo que conserva una permutacion valida."""
     inicio, fin = sorted(generador.sample(range(len(primer_padre)), 2))
     hijo = np.full(len(primer_padre), -1, dtype=np.int64)
     hijo[inicio:fin] = primer_padre[inicio:fin]
@@ -52,6 +52,8 @@ def mutar_intercambio(individuo, por_mul, generador):
         )
 
 
+# remplazo para la nueva generacion
+# busquedas local
 
 def ejecutar_algoritmo_genetico(
     tiempos,

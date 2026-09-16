@@ -3,7 +3,7 @@ import os
 import argparse
 import random
 import numpy as np
-from src.pfsp import fitness_pfsp
+from src.pfsp import fitness_pfsp,fitnesss_pfsp_machines_per
 
 
 def resolve_path_windows(path, directory):
@@ -71,6 +71,20 @@ def createParser():
     return parser
 
 
+
+def saveData(salida, cantidad_trabajos, cantidad_maquinas, makespan, mejor):
+    with open(salida, "w", encoding="utf-8") as archivo:
+        archivo.write(f"Trabajos: {cantidad_trabajos}\n")
+        archivo.write(f"Maquinas: {cantidad_maquinas}\n")
+        archivo.write(f"Makespan: {makespan}\n")
+        archivo.write(
+            "Permutacion: " + " ".join(str(trabajo + 1) for trabajo in mejor) + "\n"
+        )
+
+    print(f"Makespan: {makespan}")
+    print(f"Resultado guardado en: {salida}")
+
+
 def main():
     #files = lsDirectory("data")
     #print("Archivos de entrada disponibles en data/: ", files)
@@ -109,6 +123,9 @@ def main():
     print(f"P1: {num_job},P2: {num_maquinas} P3: {seed}, lim_inf: {lim_inf}, lim_sup: {lim_sup}")
     print(matriz)
 
+    fitnesss_pfsp_machines_per(num_job,num_maquinas,matriz,seed)
+    #candidato = min(poblacion,key=lambda individuo: fitness_pfsp(individuo, tiempos))
+
 
     '''
     # llama a la funcion de archivo ar_build
@@ -124,17 +141,6 @@ def main():
     '''
 
 
-def saveData(salida, cantidad_trabajos, cantidad_maquinas, makespan, mejor):
-    with open(salida, "w", encoding="utf-8") as archivo:
-        archivo.write(f"Trabajos: {cantidad_trabajos}\n")
-        archivo.write(f"Maquinas: {cantidad_maquinas}\n")
-        archivo.write(f"Makespan: {makespan}\n")
-        archivo.write(
-            "Permutacion: " + " ".join(str(trabajo + 1) for trabajo in mejor) + "\n"
-        )
-
-    print(f"Makespan: {makespan}")
-    print(f"Resultado guardado en: {salida}")
 
 
 
