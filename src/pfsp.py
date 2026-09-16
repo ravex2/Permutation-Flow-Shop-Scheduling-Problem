@@ -21,6 +21,8 @@ def leer_instancia(ruta):
     with open(ruta, encoding="utf-8") as archivo:
         lineas = [linea.split("#", 1)[0].strip() for linea in archivo]
     lineas = [linea for linea in lineas if linea]
+
+    '''
     if not lineas:
         raise ValueError("La instancia esta vacia.")
     n, m = map(int, lineas[0].split())
@@ -32,4 +34,7 @@ def leer_instancia(ruta):
     tiempos = np.array(filas, dtype=np.int64).T.copy()
     if np.any(tiempos < 0):
         raise ValueError("Los tiempos no pueden ser negativos.")
+    '''
+    filas = [list(map(int, linea.split())) for linea in lineas[1:]]
+    tiempos = np.array(filas, dtype=np.int64).T.copy()
     return tiempos
