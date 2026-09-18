@@ -21,6 +21,13 @@ se indique una ruta absoluta. El resultado contiene el makespan y la permutacion
 de trabajos encontrada.
 
 
+### prueba
+```sh
+
+python3 ag.py 123 30 0.8 0.1 100 ta002.txt prueba_3.txt 5
+
+```
+
 
 Download Datase 2:
 ```sh

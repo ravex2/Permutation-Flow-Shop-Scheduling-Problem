@@ -1,0 +1,4 @@
+Trabajos: 20
+Maquinas: 5
+Makespan: 1358
+Permutacion: 3 5 1 4 2

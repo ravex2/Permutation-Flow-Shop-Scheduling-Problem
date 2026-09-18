@@ -3,7 +3,6 @@ import random
 
 from src.pfsp import fitness_pfsp
 
-
 ''' 
 Implementacion del algoritmo genetico para el problema PFSP
 '''
@@ -92,12 +91,18 @@ def ejecutar_algoritmo_genetico(
             mejorado = busqueda_local_insercion(
                 candidato, tiempos, generador, max_evaluaciones_local
             )
-            indice = next(i for i, individuo in enumerate(poblacion) if individuo is candidato)
+            indice = None
+            for i, individuo in enumerate(poblacion):
+                if individuo is candidato:
+                    indice = i
+                    break 
+
+
             poblacion[indice] = mejorado
             candidato = mejorado
         if fitness_pfsp(candidato, tiempos) < fitness_pfsp(mejor, tiempos):
             mejor = candidato.copy()
-            
+
     return mejor, fitness_pfsp(mejor, tiempos)
 
 
@@ -137,11 +142,11 @@ def busqueda_local_insercion(individuo, tiempos, generador, max_evaluaciones=100
 
 def ejecutar_algoritmo_memetico(
     tiempos, tam_pob, por_cru, por_mul, num_ite, semilla,
-    frecuencia_local=1, max_evaluaciones_local=100,
+    generacion=1, max_gen_evaluada=100,
 ):
-    if frecuencia_local < 1:
+    if generacion < 1:
         raise ValueError("La frecuencia local debe ser al menos 1.")
     return ejecutar_algoritmo_genetico(
         tiempos, tam_pob, por_cru, por_mul, num_ite, semilla,
-        frecuencia_local, max_evaluaciones_local,
+        generacion, max_gen_evaluada,
     )

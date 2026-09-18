@@ -3,8 +3,8 @@ import os
 import argparse
 import random
 import numpy as np
-from src.pfsp import fitness_pfsp,leer_instancia
-from src.ag_build import ejecutar_algoritmo_genetico
+from src.pfsp import fitness_pfsp
+from src.ag_build import ejecutar_algoritmo_memetico
 
 def resolve_path_windows(path, directory):
     ruta = os.path.expanduser(path)
@@ -68,7 +68,10 @@ def createParser():
         "salida",
         help="Nombre del archivo de salida dentro de result/.",
     )
+    parser.add_argument("gene", type=int, default=1,
+                        help="Aplicar busqueda local cada N generaciones (por defecto 1).")
     return parser
+
 
 
 
@@ -98,6 +101,7 @@ def main():
     por_cru = args.por_cru
     por_mul = args.por_mul
     num_ite = args.num_ite
+    generacion = args.gene
     entrada = resolve_path_windows(args.entrada, "data")
     salida = resolve_path_windows(args.salida, "result")
 
@@ -125,14 +129,18 @@ def main():
 
     
     # llama a la funcion de archivo ar_build
-    mejor, makespan = ejecutar_algoritmo_genetico(
+    mejor, makespan = ejecutar_algoritmo_memetico(
         matriz,
         args.tam_pob,
         args.por_cru,
         args.por_mul,
         args.num_ite,
         args.semilla,
+        args.gene
     )
+
+    print("Maskepan: ", makespan)
+    print("Mejores: ", mejor)
     saveData(salida, num_job, num_maquinas, makespan, mejor)
 
 
