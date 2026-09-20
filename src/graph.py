@@ -67,7 +67,7 @@ def graficar_boxplot_rpd(csv_path=None, output_path=None):
     if csv_path is None:
         csv_path = os.path.join(project_dir, "result", "benchmark_results.csv")
     if output_path is None:
-        output_path = os.path.join(project_dir, "result", "boxplot_maskepan.png")
+        output_path = os.path.join(project_dir, "result", "boxplot_rpd.png")
 
     if not os.path.isfile(csv_path):
         print(f"Error: No se encontro el archivo CSV en {csv_path}")
@@ -122,7 +122,7 @@ def graficar_boxplot_maskepan(csv_path=None, output_path=None):
     if csv_path is None:
         csv_path = os.path.join(project_dir, "result", "benchmark_results.csv")
     if output_path is None:
-        output_path = os.path.join(project_dir, "result", "boxplot_rpd.png")
+        output_path = os.path.join(project_dir, "result", "boxplot_maskepan.png")
 
     if not os.path.isfile(csv_path):
         print(f"Error: No se encontro el archivo CSV en {csv_path}")
