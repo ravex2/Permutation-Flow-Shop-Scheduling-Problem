@@ -19,8 +19,6 @@ def resolve_path_windows(path, directory):
 
     return os.path.normpath(os.path.join(script_directory, relative_path))
 
-
-# listar los nombre de archivos de un directorio
 def lsDirectory(directory):
     files = []
     for filename in os.listdir(directory):
@@ -28,8 +26,6 @@ def lsDirectory(directory):
         if os.path.isfile(ruta_archivo):
             files.append(filename)
     return files
-
-
 
 
 def createParser():
@@ -71,8 +67,6 @@ def createParser():
     parser.add_argument("gene", type=int, default=1,
                         help="Aplicar busqueda local cada N generaciones (por defecto 1).")
     return parser
-
-
 
 
 def saveData(salida, cantidad_trabajos, cantidad_maquinas, makespan, mejor):
@@ -127,8 +121,6 @@ def main():
     print(f"P1: {num_job},P2: {num_maquinas} P3: {seed}, lim_inf: {lim_inf}, lim_sup: {lim_sup}")
     print(matriz)
 
-    
-    # llama a la funcion de archivo ar_build
     mejor, makespan = ejecutar_algoritmo_memetico(
         matriz,
         args.tam_pob,
@@ -142,7 +134,6 @@ def main():
     print("Maskepan: ", makespan)
     print("Mejores: ", mejor)
     saveData(salida, num_job, num_maquinas, makespan, mejor)
-
 
 
 
